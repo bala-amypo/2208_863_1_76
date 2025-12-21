@@ -19,7 +19,7 @@ public class ConflictFlag {
 
     private String flagType;     
     private String description;
-    private String severity;     // LOW, MEDIUM, HIGH
+    private String severity;    
 
     private LocalDateTime flaggedAt;
 
