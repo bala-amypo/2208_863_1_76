@@ -19,7 +19,7 @@ public class RelationshipDeclaration {
 
     private String relatedPersonName;
 
-    private String relationshipType;   
+    private String relationshipType;    
 
     private String description;
 
