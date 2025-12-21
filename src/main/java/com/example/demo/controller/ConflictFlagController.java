@@ -4,43 +4,36 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.model.ConflictCase;
-import com.example.demo.service.ConflictCaseService;
+import com.example.demo.model.ConflictFlag;
+import com.example.demo.service.ConflictFlagService;
 
 @RestController
-@RequestMapping("/api/conflict-cases")
-public class ConflictCaseController {
+@RequestMapping("/api/conflict-flags")
+public class ConflictFlagController {
 
-    private final ConflictCaseService conflictCaseService;
+    private final ConflictFlagService conflictFlagService;
 
-    public ConflictCaseController(ConflictCaseService conflictCaseService) {
-        this.conflictCaseService = conflictCaseService;
+    public ConflictFlagController(ConflictFlagService conflictFlagService) {
+        this.conflictFlagService = conflictFlagService;
     }
 
     @PostMapping
-    public ConflictCase createCase(@RequestBody ConflictCase conflictCase) {
-        return conflictCaseService.createCase(conflictCase);
-    }
-
-    @PutMapping("/{id}/status")
-    public ConflictCase updateStatus(
-            @PathVariable Long id,
-            @RequestParam String status) {
-        return conflictCaseService.updateCaseStatus(id, status);
+    public ConflictFlag addFlag(@RequestBody ConflictFlag flag) {
+        return conflictFlagService.addFlag(flag);
     }
 
     @GetMapping("/{id}")
-    public ConflictCase getCaseById(@PathVariable Long id) {
-        return conflictCaseService.getCaseById(id);
+    public ConflictFlag getFlagById(@PathVariable Long id) {
+        return conflictFlagService.getFlagById(id);
     }
 
-    @GetMapping("/person/{personId}")
-    public List<ConflictCase> getCasesByPerson(@PathVariable Long personId) {
-        return conflictCaseService.getCasesByPerson(personId);
+    @GetMapping("/case/{caseId}")
+    public List<ConflictFlag> getFlagsByCase(@PathVariable Long caseId) {
+        return conflictFlagService.getFlagsByCase(caseId);
     }
 
     @GetMapping
-    public List<ConflictCase> getAllCases() {
-        return conflictCaseService.getAllCases();
+    public List<ConflictFlag> getAllFlags() {
+        return conflictFlagService.getAllFlags();
     }
 }
