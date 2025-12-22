@@ -15,9 +15,12 @@ public class PersonProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String personType;          
+    private String personType; 
+      
+    @Column(unique = true, nullable = false)       
     private String referenceId;          
     private String fullName;
+
     private String email;                
     private String department;
 
