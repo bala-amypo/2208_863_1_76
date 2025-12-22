@@ -1,8 +1,6 @@
 package com.example.demo.model;
 
 import java.time.LocalDateTime;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,17 +17,10 @@ public class PersonProfile {
 
     private String personType; 
       
-    @Column(unique = true, nullable = false)       
+    
     private String referenceId;          
     private String fullName;
-
-
-@Column(unique = true, nullable = false)
-@NotBlank(message = "email must not be blank")
-@Email(message = "email must be valid")
-private String email;
-
-              
+private String email;   
     private String department;
 
     private Boolean relationshipDeclared;
