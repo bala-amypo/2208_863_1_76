@@ -33,9 +33,7 @@ private String email;
             this.relationshipDeclared = false;
         }
     }
-
-
-
+    
     public Long getId() {
         return id;
     }

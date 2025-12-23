@@ -36,7 +36,7 @@ public class ConflictCase {
         }
     }
 
-    // ---- Getters & Setters ----
+    
 
     public Long getId() {
         return id;
