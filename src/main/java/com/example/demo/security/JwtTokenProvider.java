@@ -13,6 +13,7 @@ public class JwtTokenProvider {
         this.validityInMs = validityInMs;
     }
 
+    // REQUIRED by tests
     public String generateToken(String username) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMs);
@@ -25,7 +26,8 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getUsername(String token) {
+    // ❗ THIS METHOD NAME IS CRITICAL
+    public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
@@ -33,6 +35,7 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
+    // REQUIRED by tests
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
