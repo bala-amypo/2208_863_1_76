@@ -14,18 +14,14 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(); // roles not required for tests
+        return List.of();
     }
 
     @Override
-    public String getPassword() {
-        return null; // not used
-    }
+    public String getPassword() { return null; }
 
     @Override
-    public String getUsername() {
-        return username;
-    }
+    public String getUsername() { return username; }
 
     @Override
     public boolean isAccountNonExpired() { return true; }

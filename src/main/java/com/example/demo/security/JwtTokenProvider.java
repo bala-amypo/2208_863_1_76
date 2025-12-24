@@ -1,7 +1,6 @@
 package com.example.demo.security;
 
 import io.jsonwebtoken.*;
-import java.util.*;
 import java.util.Date;
 
 public class JwtTokenProvider {
@@ -9,7 +8,6 @@ public class JwtTokenProvider {
     private final String secret;
     private final long validityInMs;
 
-    // REQUIRED constructor (tests call this directly)
     public JwtTokenProvider(String secret, long validityInMs) {
         this.secret = secret;
         this.validityInMs = validityInMs;

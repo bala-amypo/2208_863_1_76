@@ -10,7 +10,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        // Simple in-memory user for testing
         return new UserPrincipal(username);
     }
 }
