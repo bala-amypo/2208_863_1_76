@@ -26,14 +26,14 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // ❗ THIS METHOD NAME IS CRITICAL
-    public String getUsernameFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
+public String getUsernameFromToken(String token) {
+    return Jwts.parser()
+            .setSigningKey(secret)
+            .parseClaimsJws(token)
+            .getBody()
+            .getSubject();
+}
+
 
     // REQUIRED by tests
     public boolean validateToken(String token) {
