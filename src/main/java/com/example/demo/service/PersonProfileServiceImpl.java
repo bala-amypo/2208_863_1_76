@@ -9,34 +9,38 @@ import java.util.List;
 
 public class PersonProfileServiceImpl implements PersonProfileService {
 
-    private final PersonProfileRepository repo;
+    private final PersonProfileRepository repository;
 
-    public PersonProfileServiceImpl(PersonProfileRepository repo) {
-        this.repo = repo;
+    public PersonProfileServiceImpl(PersonProfileRepository repository) {
+        this.repository = repository;
     }
 
+    @Override
     public PersonProfile createPerson(PersonProfile person) {
-        if (repo.findByEmail(person.getEmail()).isPresent())
-            throw new ApiException("email exists");
-
-        if (repo.findByReferenceId(person.getReferenceId()).isPresent())
-            throw new ApiException("reference exists");
-
-        return repo.save(person);
+        if (repository.findByEmail(person.getEmail()).isPresent()) {
+            throw new ApiException("email already exists");
+        }
+        if (repository.findByReferenceId(person.getReferenceId()).isPresent()) {
+            throw new ApiException("reference already exists");
+        }
+        return repository.save(person);
     }
 
+    @Override
     public PersonProfile getPersonById(Long id) {
-        return repo.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new ApiException("person not found"));
     }
 
+    @Override
     public List<PersonProfile> getAllPersons() {
-        return repo.findAll();
+        return repository.findAll();
     }
 
+    @Override
     public PersonProfile updateRelationshipDeclared(Long id, boolean declared) {
-        PersonProfile p = getPersonById(id);
-        p.setRelationshipDeclared(declared);
-        return repo.save(p);
+        PersonProfile person = getPersonById(id);
+        person.setRelationshipDeclared(declared);
+        return repository.save(person);
     }
 }
