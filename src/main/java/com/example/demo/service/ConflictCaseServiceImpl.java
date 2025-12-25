@@ -32,7 +32,18 @@ public class ConflictCaseServiceImpl implements ConflictCaseService {
 
     @Override
     public List<ConflictCase> getCasesByPerson(Long personId) {
-        return conflictCaseRepository.findAll(); // simple implementation
+        return conflictCaseRepository.findAll();
+    }
+
+    // ✅ THIS WAS MISSING
+    @Override
+    public ConflictCase updateCaseStatus(Long id, String status) {
+        ConflictCase conflictCase = conflictCaseRepository.findById(id).orElse(null);
+        if (conflictCase != null) {
+            conflictCase.setStatus(status);
+            return conflictCaseRepository.save(conflictCase);
+        }
+        return null;
     }
 
     @Override
