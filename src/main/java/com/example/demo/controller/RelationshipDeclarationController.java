@@ -1,53 +1,39 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.PersonProfile;
-import com.example.demo.service.PersonProfileService;
-import org.springframework.http.ResponseEntity;
+import com.example.demo.model.RelationshipDeclaration;
+import com.example.demo.service.RelationshipDeclarationService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/persons")
-public class PersonProfileController {
+@RequestMapping("/api/relationships")
+public class RelationshipDeclarationController {
 
-    private final PersonProfileService service;
+    private final RelationshipDeclarationService service;
 
-    public PersonProfileController(PersonProfileService service) {
+    public RelationshipDeclarationController(RelationshipDeclarationService service) {
         this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<PersonProfile> create(@RequestBody PersonProfile person) {
-        return ResponseEntity.ok(service.createPerson(person));
+    public RelationshipDeclaration declare(@RequestBody RelationshipDeclaration declaration) {
+        return service.declareRelationship(declaration);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PersonProfile> getById(@PathVariable Long id) {
-        return service.getPersonById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/person/{personId}")
+    public List<RelationshipDeclaration> getByPerson(@PathVariable Long personId) {
+        return service.getDeclarationsByPerson(personId);
+    }
+
+    @PutMapping("/{id}/verify")
+    public RelationshipDeclaration verify(@PathVariable Long id,
+                                          @RequestParam boolean verified) {
+        return service.verifyDeclaration(id, verified);
     }
 
     @GetMapping
-    public ResponseEntity<List<PersonProfile>> getAll() {
-        return ResponseEntity.ok(service.getAllPersons());
-    }
-
-    @GetMapping("/lookup/{referenceId}")
-    public ResponseEntity<PersonProfile> lookup(@PathVariable String referenceId) {
-        return service.findByReferenceId(referenceId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PutMapping("/{id}/relationship")
-    public ResponseEntity<PersonProfile> updateRelationshipDeclared(
-            @PathVariable Long id,
-            @RequestParam boolean declared) {
-
-        return ResponseEntity.ok(
-                service.updateRelationshipDeclared(id, declared)
-        );
+    public List<RelationshipDeclaration> getAll() {
+        return service.getAllDeclarations();
     }
 }

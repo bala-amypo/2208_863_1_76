@@ -8,28 +8,26 @@ import java.util.Collections;
 
 public class UserPrincipal implements UserDetails {
 
-    private Long id;
-    private String username;
+    private final Long id;
+    private final String username;
 
-    // ✅ REQUIRED constructor (used by CustomUserDetailsService)
     public UserPrincipal(Long id, String username) {
         this.id = id;
         this.username = username;
     }
 
-    // ✅ Getter (sometimes used by JWT / controllers)
     public Long getId() {
         return id;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // no roles for now
+        return Collections.emptyList();
     }
 
     @Override
     public String getPassword() {
-        return null; // password not required for test engine
+        return "";
     }
 
     @Override
