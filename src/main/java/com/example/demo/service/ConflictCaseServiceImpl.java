@@ -25,10 +25,12 @@ public class ConflictCaseServiceImpl implements ConflictCaseService {
         return conflictCaseRepository.save(conflictCase);
     }
 
-    @Override
-    public ConflictCase getCaseById(Long id) {
-        return conflictCaseRepository.findById(id).orElse(null);
-    }
+  @Override
+public Optional<ConflictCase> getCaseById(Long id) {
+    return conflictCaseRepository.findById(id);
+}
+
+
 
     @Override
     public List<ConflictCase> getCasesByPerson(Long personId) {
