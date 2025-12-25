@@ -1,22 +1,19 @@
 package com.example.demo.security;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-
-import java.security.Key;
 import java.util.Date;
 
 public class JwtTokenProvider {
 
-    private final Key key;
+    private final String secret;
     private final long validityInMs;
 
     public JwtTokenProvider(String secret, long validityInMs) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.secret = secret;
         this.validityInMs = validityInMs;
     }
 
-    // Generate JWT
+    // Generate JWT token
     public String generateToken(String username) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMs);
@@ -25,14 +22,14 @@ public class JwtTokenProvider {
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
     // Extract username
     public String getUsernameFromToken(String token) {
         return Jwts.parser()
-                .setSigningKey(key)
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -42,7 +39,7 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                .setSigningKey(key)
+                .setSigningKey(secret)
                 .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
