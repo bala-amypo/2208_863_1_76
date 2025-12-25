@@ -32,6 +32,10 @@ public class ConflictCaseServiceImpl implements ConflictCaseService {
         return repository.findById(id)
                 .orElseThrow(() -> new ApiException("case not found"));
     }
+@Override
+public List<ConflictCase> getAllCases() {
+    return conflictCaseRepository.findAll();
+}
 
     @Override
     public List<ConflictCase> getCasesByPerson(Long personId) {
