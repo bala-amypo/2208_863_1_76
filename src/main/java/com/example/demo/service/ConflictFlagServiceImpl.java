@@ -25,4 +25,10 @@ public class ConflictFlagServiceImpl implements ConflictFlagService {
     public List<ConflictFlag> getAllFlags() {
         return conflictFlagRepository.findAll();
     }
+
+    // ✅ REQUIRED BY INTERFACE
+    @Override
+    public List<ConflictFlag> getFlagsByCase(Long caseId) {
+        return conflictFlagRepository.findByCaseId(caseId);
+    }
 }

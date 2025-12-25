@@ -6,8 +6,6 @@ import com.example.demo.repository.PersonProfileRepository;
 import com.example.demo.service.PersonProfileService;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class PersonProfileServiceImpl implements PersonProfileService {
 
@@ -22,9 +20,11 @@ public class PersonProfileServiceImpl implements PersonProfileService {
         return personProfileRepository.save(person);
     }
 
+    // ✅ RETURN TYPE FIXED
     @Override
-    public Optional<PersonProfile> findByReferenceId(String referenceId) {
-        return personProfileRepository.findByReferenceId(referenceId);
+    public PersonProfile findByReferenceId(String referenceId) {
+        return personProfileRepository.findByReferenceId(referenceId)
+                .orElseThrow(() -> new ApiException("Person not found"));
     }
 
     @Override
@@ -32,4 +32,13 @@ public class PersonProfileServiceImpl implements PersonProfileService {
         return personProfileRepository.findById(id)
                 .orElseThrow(() -> new ApiException("Person not found"));
     }
+
+    // ✅ REQUIRED BY INTERFACE
+    @Override
+    public void updateRelationshipDeclared(Long id, boolean declared) {
+        PersonProfile p = getPersonById(id);
+        p.setRelationshipDeclared(declared);
+        personProfileRepository.save(p);
+    }
 }
+  
