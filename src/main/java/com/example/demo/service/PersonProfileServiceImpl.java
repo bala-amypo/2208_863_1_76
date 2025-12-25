@@ -14,6 +14,12 @@ public class PersonProfileServiceImpl implements PersonProfileService {
     public PersonProfileServiceImpl(PersonProfileRepository repository) {
         this.repository = repository;
     }
+    @Override
+public PersonProfile findByReferenceId(String referenceId) {
+    return personProfileRepository.findByReferenceId(referenceId)
+            .orElseThrow(() -> new ApiException("reference not found"));
+}
+
 
     @Override
     public PersonProfile createPerson(PersonProfile person) {

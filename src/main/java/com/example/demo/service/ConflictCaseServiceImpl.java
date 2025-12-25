@@ -10,6 +10,7 @@ import java.util.List;
 public class ConflictCaseServiceImpl implements ConflictCaseService {
 
     private final ConflictCaseRepository repository;
+private final ConflictCaseRepository conflictCaseRepository;
 
     public ConflictCaseServiceImpl(ConflictCaseRepository repository) {
         this.repository = repository;

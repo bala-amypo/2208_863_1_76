@@ -1,24 +1,19 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-
-import java.security.Key;
+import io.jsonwebtoken.*;
 import java.util.Date;
 
 public class JwtTokenProvider {
 
-    private final Key secretKey;
+    private final String secret;
     private final long validityInMs;
 
-    // ✅ REQUIRED constructor (tests call this directly)
+    // ✅ Tests use this constructor
     public JwtTokenProvider(String secret, long validityInMs) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.secret = secret;
         this.validityInMs = validityInMs;
     }
 
-    // ✅ Generate JWT token
     public String generateToken(String username) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMs);
@@ -27,31 +22,24 @@ public class JwtTokenProvider {
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(secretKey)
+                .signWith(SignatureAlgorithm.HS256, secret) // ✅ OLD API
                 .compact();
     }
 
-    // ✅ Extract username from token
     public String getUsername(String token) {
-        return getClaims(token).getSubject();
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
-    // ✅ Validate token (USED BY FILTER + TESTS)
     public boolean validateToken(String token) {
         try {
-            getClaims(token);
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
         }
-    }
-
-    // 🔒 Internal helper
-    private Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 }
