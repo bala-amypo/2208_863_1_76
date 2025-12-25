@@ -1,17 +1,51 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
+import com.example.demo.exception.ApiException;
 import com.example.demo.model.PersonProfile;
+import com.example.demo.repository.PersonProfileRepository;
+import com.example.demo.service.PersonProfileService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-public interface PersonProfileService {
+@Service
+public class PersonProfileServiceImpl implements PersonProfileService {
 
-    PersonProfile createPerson(PersonProfile person);
+    private final PersonProfileRepository personProfileRepository;
 
-    PersonProfile getPersonById(Long id);
+    public PersonProfileServiceImpl(PersonProfileRepository personProfileRepository) {
+        this.personProfileRepository = personProfileRepository;
+    }
 
-    List<PersonProfile> getAllPersons();
+    @Override
+    public PersonProfile createPerson(PersonProfile person) {
+        return personProfileRepository.save(person);
+    }
 
-    PersonProfile findByReferenceId(String referenceId);
+    @Override
+    public PersonProfile getPersonById(Long id) {
+        return personProfileRepository.findById(id)
+                .orElseThrow(() -> new ApiException("person not found"));
+    }
 
-    PersonProfile updateRelationshipDeclared(Long id, boolean declared);
+    // ✅ REQUIRED BY INTERFACE
+    @Override
+    public List<PersonProfile> getAllPersons() {
+        return personProfileRepository.findAll();
+    }
+
+    // ✅ RETURN TYPE MATCHES INTERFACE
+    @Override
+    public PersonProfile findByReferenceId(String referenceId) {
+        return personProfileRepository.findByReferenceId(referenceId)
+                .orElseThrow(() -> new ApiException("person not found"));
+    }
+
+    // ✅ RETURN TYPE MATCHES INTERFACE
+    @Override
+    public PersonProfile updateRelationshipDeclared(Long id, boolean declared) {
+        PersonProfile person = getPersonById(id);
+        person.setRelationshipDeclared(declared);
+        return personProfileRepository.save(person);
+    }
 }
