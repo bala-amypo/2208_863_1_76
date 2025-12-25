@@ -21,10 +21,14 @@ public class PersonProfileController {
         return service.createPerson(person);
     }
 
-    @GetMapping("/{id}")
-    public PersonProfile get(@PathVariable Long id) {
-        return service.getPersonById(id);
-    }
+  @GetMapping("/{id}")
+public ResponseEntity<PersonProfile> getPersonById(@PathVariable Long id) {
+
+    return personProfileService.getPersonById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+}
+
     @GetMapping("/lookup/{referenceId}")
 public ResponseEntity<PersonProfile> lookup(@PathVariable String referenceId) {
     return personProfileService
