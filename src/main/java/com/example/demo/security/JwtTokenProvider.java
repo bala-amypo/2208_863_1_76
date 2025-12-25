@@ -8,7 +8,6 @@ public class JwtTokenProvider {
     private final String secret;
     private final long validityInMs;
 
-    // ✅ Tests use this constructor
     public JwtTokenProvider(String secret, long validityInMs) {
         this.secret = secret;
         this.validityInMs = validityInMs;
@@ -22,11 +21,12 @@ public class JwtTokenProvider {
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(SignatureAlgorithm.HS256, secret) // ✅ OLD API
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
-    public String getUsername(String token) {
+    // ✅ THIS METHOD IS REQUIRED
+    public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
@@ -38,7 +38,7 @@ public class JwtTokenProvider {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
