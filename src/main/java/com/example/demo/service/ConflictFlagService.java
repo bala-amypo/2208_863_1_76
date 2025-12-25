@@ -1,40 +1,13 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
-import com.example.demo.exception.ApiException;
-import com.example.demo.model.ConflictCase;
-import com.example.demo.repository.ConflictCaseRepository;
-import com.example.demo.service.ConflictCaseService;
-
+import com.example.demo.model.ConflictFlag;
 import java.util.List;
 
-public class ConflictCaseServiceImpl implements ConflictCaseService {
+public interface ConflictFlagService {
 
-    private final ConflictCaseRepository repository;
+    ConflictFlag addFlag(ConflictFlag flag);
 
-    public ConflictCaseServiceImpl(ConflictCaseRepository repository) {
-        this.repository = repository;
-    }
+    ConflictFlag getFlagById(Long id);
 
-    @Override
-    public ConflictCase createCase(ConflictCase conflictCase) {
-        return repository.save(conflictCase);
-    }
-
-    @Override
-    public ConflictCase updateCaseStatus(Long id, String status) {
-        ConflictCase c = getCaseById(id);
-        c.setStatus(status);
-        return repository.save(c);
-    }
-
-    @Override
-    public ConflictCase getCaseById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ApiException("case not found"));
-    }
-
-    @Override
-    public List<ConflictCase> getCasesByPerson(Long personId) {
-        return repository.findByPrimaryPersonIdOrSecondaryPersonId(personId, personId);
-    }
+    List<ConflictFlag> getFlagsByCase(Long caseId);
 }

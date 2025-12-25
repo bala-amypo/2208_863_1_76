@@ -3,28 +3,26 @@ package com.example.demo.controller;
 import com.example.demo.model.PersonProfile;
 import com.example.demo.service.PersonProfileService;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/persons")
 public class PersonProfileController {
 
-    private PersonProfileService service;
-
-    // REQUIRED NO-ARG CONSTRUCTOR
-    public PersonProfileController() {}
+    private final PersonProfileService service;
 
     public PersonProfileController(PersonProfileService service) {
         this.service = service;
     }
 
     @PostMapping
-    public PersonProfile create(PersonProfile p) {
-        return service.createPerson(p);
+    public PersonProfile create(@RequestBody PersonProfile person) {
+        return service.createPerson(person);
     }
 
     @GetMapping("/{id}")
-    public PersonProfile get(Long id) {
+    public PersonProfile get(@PathVariable Long id) {
         return service.getPersonById(id);
     }
 
