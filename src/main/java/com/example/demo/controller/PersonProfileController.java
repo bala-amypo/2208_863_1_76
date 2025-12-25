@@ -24,7 +24,9 @@ public class PersonProfileController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonProfile> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getPersonById(id));
+        return service.getPersonById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
@@ -34,14 +36,18 @@ public class PersonProfileController {
 
     @GetMapping("/lookup/{referenceId}")
     public ResponseEntity<PersonProfile> lookup(@PathVariable String referenceId) {
-        return ResponseEntity.ok(service.findByReferenceId(referenceId));
+        return service.findByReferenceId(referenceId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}/relationship")
     public ResponseEntity<PersonProfile> updateRelationshipDeclared(
             @PathVariable Long id,
-            @RequestParam boolean declared
-    ) {
-        return ResponseEntity.ok(service.updateRelationshipDeclared(id, declared));
+            @RequestParam boolean declared) {
+
+        return ResponseEntity.ok(
+                service.updateRelationshipDeclared(id, declared)
+        );
     }
 }

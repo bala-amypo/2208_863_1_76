@@ -20,16 +20,18 @@ public class VendorEngagementController {
     @PostMapping
     public ResponseEntity<VendorEngagementRecord> create(
             @RequestBody VendorEngagementRecord record) {
-        return ResponseEntity.ok(service.createEngagement(record));
+        return ResponseEntity.ok(service.save(record));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<VendorEngagementRecord> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getEngagementById(id));
+        return service.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
     public ResponseEntity<List<VendorEngagementRecord>> getAll() {
-        return ResponseEntity.ok(service.getAllEngagements());
+        return ResponseEntity.ok(service.findAll());
     }
 }
