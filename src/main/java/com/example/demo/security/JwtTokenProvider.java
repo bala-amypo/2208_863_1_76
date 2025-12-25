@@ -13,7 +13,7 @@ public class JwtTokenProvider {
         this.validityInMs = validityInMs;
     }
 
-    // Generate JWT token
+    // Used by tests
     public String generateToken(String username) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMs);
@@ -26,7 +26,11 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // Extract username
+    // Overload required by tests
+    public String generateToken(UserPrincipal principal) {
+        return generateToken(principal.getUsername());
+    }
+
     public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
@@ -35,12 +39,9 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    // Validate token
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token);
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
