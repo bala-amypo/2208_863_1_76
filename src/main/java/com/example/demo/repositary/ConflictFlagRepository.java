@@ -1,10 +1,9 @@
 package com.example.demo.repository;
 
-import java.util.List;
-
+import com.example.demo.model.ConflictFlag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.model.ConflictFlag;
+import java.util.List;
 
 public interface ConflictFlagRepository
         extends JpaRepository<ConflictFlag, Long> {
