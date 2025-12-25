@@ -11,24 +11,25 @@ public class UserPrincipal implements UserDetails {
     private Long id;
     private String username;
 
+    // ✅ REQUIRED constructor (used by CustomUserDetailsService)
     public UserPrincipal(Long id, String username) {
         this.id = id;
         this.username = username;
     }
 
-    // ✅ REQUIRED BY TEST
+    // ✅ Getter (sometimes used by JWT / controllers)
     public Long getId() {
         return id;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return Collections.emptyList(); // no roles for now
     }
 
     @Override
     public String getPassword() {
-        return null;
+        return null; // password not required for test engine
     }
 
     @Override
@@ -37,14 +38,22 @@ public class UserPrincipal implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return true;
+    }
 }
