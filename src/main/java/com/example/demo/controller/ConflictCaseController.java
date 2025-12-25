@@ -24,7 +24,9 @@ public class ConflictCaseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ConflictCase> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getCaseById(id));
+        return service.getCaseById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
