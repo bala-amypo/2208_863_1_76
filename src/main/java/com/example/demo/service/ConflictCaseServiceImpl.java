@@ -6,7 +6,9 @@ import com.example.demo.repository.ConflictCaseRepository;
 import com.example.demo.service.ConflictCaseService;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ConflictCaseServiceImpl implements ConflictCaseService {
 
     private final ConflictCaseRepository conflictCaseRepository;

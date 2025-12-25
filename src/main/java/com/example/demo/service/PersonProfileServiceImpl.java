@@ -6,7 +6,9 @@ import com.example.demo.repository.PersonProfileRepository;
 import com.example.demo.service.PersonProfileService;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PersonProfileServiceImpl implements PersonProfileService {
 
     private final PersonProfileRepository personProfileRepository;
