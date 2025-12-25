@@ -5,4 +5,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/api/persons")
 public class PersonProfileController {
+     public PersonProfileController() {
+      
+    }
+  public PersonProfileController(PersonProfileService service) {
+        this.service = service;
+    }
 }
