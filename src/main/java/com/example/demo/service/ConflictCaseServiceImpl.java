@@ -9,37 +9,39 @@ import java.util.List;
 
 public class ConflictCaseServiceImpl implements ConflictCaseService {
 
-    private final ConflictCaseRepository repository;
-private final ConflictCaseRepository conflictCaseRepository;
+    private final ConflictCaseRepository conflictCaseRepository;
 
-    public ConflictCaseServiceImpl(ConflictCaseRepository repository) {
-        this.repository = repository;
+    // ✅ Single constructor (tests expect this)
+    public ConflictCaseServiceImpl(ConflictCaseRepository conflictCaseRepository) {
+        this.conflictCaseRepository = conflictCaseRepository;
     }
 
     @Override
     public ConflictCase createCase(ConflictCase conflictCase) {
-        return repository.save(conflictCase);
+        return conflictCaseRepository.save(conflictCase);
     }
 
     @Override
     public ConflictCase updateCaseStatus(Long id, String status) {
         ConflictCase c = getCaseById(id);
         c.setStatus(status);
-        return repository.save(c);
+        return conflictCaseRepository.save(c);
     }
 
     @Override
     public ConflictCase getCaseById(Long id) {
-        return repository.findById(id)
+        return conflictCaseRepository.findById(id)
                 .orElseThrow(() -> new ApiException("case not found"));
     }
-@Override
-public List<ConflictCase> getAllCases() {
-    return conflictCaseRepository.findAll();
-}
+
+    @Override
+    public List<ConflictCase> getAllCases() {
+        return conflictCaseRepository.findAll();
+    }
 
     @Override
     public List<ConflictCase> getCasesByPerson(Long personId) {
-        return repository.findByPrimaryPersonIdOrSecondaryPersonId(personId, personId);
+        return conflictCaseRepository
+                .findByPrimaryPersonIdOrSecondaryPersonId(personId, personId);
     }
 }
