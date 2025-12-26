@@ -10,16 +10,28 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private static final String SECRET = "mysecretkeymysecretkeymysecretkey";
-    private static final long EXPIRATION = 3600000;
+    private String secret;
+    private long expiration;
+
+    // ✅ Default constructor (Spring)
+    public JwtTokenProvider() {
+        this.secret = "mysecretkeymysecretkeymysecretkey";
+        this.expiration = 3600000;
+    }
+
+    // ✅ Constructor expected by TESTS
+    public JwtTokenProvider(String secret, long expiration) {
+        this.secret = secret;
+        this.expiration = expiration;
+    }
 
     public String generateToken(UserPrincipal user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("userId", user.getId())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
@@ -38,7 +50,7 @@ public class JwtTokenProvider {
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(SECRET)
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
     }
