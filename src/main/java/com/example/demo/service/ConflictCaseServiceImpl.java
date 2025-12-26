@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.exception.ApiException;
 import com.example.demo.model.ConflictCase;
 import com.example.demo.repository.ConflictCaseRepository;
+import com.example.demo.repository.ConflictFlagRepository;
 import com.example.demo.service.ConflictCaseService;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,20 @@ import java.util.Optional;
 public class ConflictCaseServiceImpl implements ConflictCaseService {
 
     private final ConflictCaseRepository repository;
+    private final ConflictFlagRepository flagRepository;
 
+    // ✅ Constructor used by Spring
     public ConflictCaseServiceImpl(ConflictCaseRepository repository) {
         this.repository = repository;
+        this.flagRepository = null;
+    }
+
+    // ✅ Constructor expected by TESTS
+    public ConflictCaseServiceImpl(
+            ConflictCaseRepository repository,
+            ConflictFlagRepository flagRepository) {
+        this.repository = repository;
+        this.flagRepository = flagRepository;
     }
 
     @Override
