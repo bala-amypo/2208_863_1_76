@@ -20,8 +20,9 @@ public class PersonProfileServiceImpl implements PersonProfileService {
 
     @Override
     public PersonProfile createPerson(PersonProfile person) {
+
         if (person.getEmail() == null) {
-            throw new ApiException("Email required");
+            throw new ApiException("Email is required");
         }
 
         if (repository.findByEmail(person.getEmail()).isPresent()) {
@@ -30,7 +31,11 @@ public class PersonProfileServiceImpl implements PersonProfileService {
 
         if (person.getReferenceId() != null &&
                 repository.findByReferenceId(person.getReferenceId()).isPresent()) {
-            throw new ApiException("Duplicate reference id");
+            throw new ApiException("Duplicate referenceId");
+        }
+
+        if (person.getRelationshipDeclared() == null) {
+            person.setRelationshipDeclared(false);
         }
 
         return repository.save(person);
@@ -38,12 +43,11 @@ public class PersonProfileServiceImpl implements PersonProfileService {
 
     @Override
     public Optional<PersonProfile> getPersonById(Long id) {
-        return repository.findById(id);
-    }
-
-    @Override
-    public Optional<PersonProfile> findByReferenceId(String referenceId) {
-        return repository.findByReferenceId(referenceId);
+        Optional<PersonProfile> person = repository.findById(id);
+        if (person.isEmpty()) {
+            throw new ApiException("Person not found");
+        }
+        return person;
     }
 
     @Override
@@ -59,5 +63,9 @@ public class PersonProfileServiceImpl implements PersonProfileService {
         person.setRelationshipDeclared(declared);
         return repository.save(person);
     }
+
+    @Override
+    public Optional<PersonProfile> findByReferenceId(String referenceId) {
+        return repository.findByReferenceId(referenceId);
+    }
 }
-                      
