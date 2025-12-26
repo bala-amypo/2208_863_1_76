@@ -21,8 +21,8 @@ public class ConflictCaseServiceImpl implements ConflictCaseService {
     @Override
     public ConflictCase createCase(ConflictCase conflictCase) {
 
-        if (conflictCase.getPrimaryPerson() == null ||
-            conflictCase.getSecondaryPerson() == null) {
+        if (conflictCase.getPrimaryPersonId() == null ||
+            conflictCase.getSecondaryPersonId() == null) {
             throw new ApiException("Persons required");
         }
 
