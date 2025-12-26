@@ -19,11 +19,9 @@ public class RelationshipDeclarationServiceImpl implements RelationshipDeclarati
 
     @Override
     public RelationshipDeclaration createDeclaration(RelationshipDeclaration declaration) {
-
         if (declaration.getPersonId() == null) {
             throw new ApiException("Person required");
         }
-
         declaration.setIsVerified(false);
         return repository.save(declaration);
     }
@@ -35,8 +33,8 @@ public class RelationshipDeclarationServiceImpl implements RelationshipDeclarati
     }
 
     @Override
-    public List<RelationshipDeclaration> getAllDeclarations() {
-        return repository.findAll();
+    public List<RelationshipDeclaration> getDeclarationsByPerson(Long personId) {
+        return repository.findByPersonId(personId);
     }
 
     @Override
@@ -46,5 +44,10 @@ public class RelationshipDeclarationServiceImpl implements RelationshipDeclarati
 
         declaration.setIsVerified(true);
         return repository.save(declaration);
+    }
+
+    @Override
+    public List<RelationshipDeclaration> getAllDeclarations() {
+        return repository.findAll();
     }
 }

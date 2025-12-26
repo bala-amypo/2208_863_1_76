@@ -20,23 +20,19 @@ public class PersonProfileServiceImpl implements PersonProfileService {
     @Override
     public PersonProfile createPerson(PersonProfile person) {
 
-        if (person.getEmail() == null || person.getEmail().isBlank()) {
+        if (person.getEmail() == null) {
             throw new ApiException("Email required");
         }
 
-        if (repository.findByEmail(person.getEmail()).isPresent()) {
+        if (repository.existsByEmail(person.getEmail())) {
             throw new ApiException("Duplicate email");
         }
 
-        if (person.getReferenceId() != null &&
-            repository.findByReferenceId(person.getReferenceId()).isPresent()) {
-            throw new ApiException("Duplicate referenceId");
+        if (repository.existsByReferenceId(person.getReferenceId())) {
+            throw new ApiException("Duplicate reference id");
         }
 
-        if (person.getRelationshipDeclared() == null) {
-            person.setRelationshipDeclared(false);
-        }
-
+        person.setRelationshipDeclared(false);
         return repository.save(person);
     }
 
@@ -59,8 +55,8 @@ public class PersonProfileServiceImpl implements PersonProfileService {
 
     @Override
     public PersonProfile updateRelationshipDeclared(Long id, boolean declared) {
-        PersonProfile p = getPersonById(id);
-        p.setRelationshipDeclared(declared);
-        return repository.save(p);
+        PersonProfile person = getPersonById(id);
+        person.setRelationshipDeclared(declared);
+        return repository.save(person);
     }
 }
