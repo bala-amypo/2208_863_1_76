@@ -1,58 +1,53 @@
-package com.example.demo.service.impl;
+package com.example.demo.security;
 
-import com.example.demo.exception.ApiException;
-import com.example.demo.model.PersonProfile;
-import com.example.demo.repository.PersonProfileRepository;
-import com.example.demo.service.PersonProfileService;
-import org.springframework.stereotype.Service;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 
-import java.util.List;
-import java.util.Optional;
+import javax.crypto.SecretKey;
+import java.util.Date;
 
-@Service
-public class PersonProfileServiceImpl implements PersonProfileService {
+public class JwtTokenProvider {
 
-    private final PersonProfileRepository repository;
+    private final SecretKey key;
+    private final long validityInMs;
 
-    public PersonProfileServiceImpl(PersonProfileRepository repository) {
-        this.repository = repository;
+    public JwtTokenProvider(String secret, long validityInMs) {
+        this.key = Keys.hmacKeyFor(secret.getBytes());
+        this.validityInMs = validityInMs;
     }
 
-    @Override
-    public PersonProfile createPerson(PersonProfile person) {
-        if (person.getEmail() == null) {
-            throw new ApiException("Email required");
+    public String generateToken(UserPrincipal user) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + validityInMs);
+
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .claim("userId", user.getId())
+                .claim("role", user.getRole())
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            parseClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        if (repository.findByEmail(person.getEmail()).isPresent()) {
-            throw new ApiException("Duplicate email");
-        }
-        if (repository.findByReferenceId(person.getReferenceId()).isPresent()) {
-            throw new ApiException("Duplicate reference");
-        }
-        return repository.save(person);
     }
 
-    // 🔴 MUST THROW ApiException (not Optional)
-    @Override
-    public PersonProfile getPersonById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ApiException("Person not found"));
+    public String getUsernameFromToken(String token) {
+        return parseClaims(token).getSubject();
     }
 
-    @Override
-    public Optional<PersonProfile> findByReferenceId(String refId) {
-        return repository.findByReferenceId(refId);
-    }
-
-    @Override
-    public List<PersonProfile> getAllPersons() {
-        return repository.findAll();
-    }
-
-    @Override
-    public PersonProfile updateRelationshipDeclared(Long id, boolean declared) {
-        PersonProfile p = getPersonById(id);
-        p.setRelationshipDeclared(declared);
-        return repository.save(p);
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
