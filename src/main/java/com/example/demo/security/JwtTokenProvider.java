@@ -2,38 +2,27 @@ package com.example.demo.security;
 
 import io.jsonwebtoken.*;
 import java.util.Date;
-
+@Component
 public class JwtTokenProvider {
 
-    private final String secret;
-    private final long validityInMs;
+    private final String jwtSecret = "secretkeysecretkeysecretkeysecretkey";
+    private final long jwtExpirationMs = 3600000;
 
-    public JwtTokenProvider(String secret, long validityInMs) {
-        this.secret = secret;
-        this.validityInMs = validityInMs;
-    }
-
-    // Used by tests
-    public String generateToken(String username) {
-        Date now = new Date();
-        Date expiry = new Date(now.getTime() + validityInMs);
+    public String generateToken(UserPrincipal user) {
 
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(now)
-                .setExpiration(expiry)
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .setSubject(user.getUsername())
+                .claim("userId", user.getId())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Overload required by tests
-    public String generateToken(UserPrincipal principal) {
-        return generateToken(principal.getUsername());
-    }
-
     public String getUsernameFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
+        return Jwts.parserBuilder()
+                .setSigningKey(jwtSecret.getBytes())
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -41,9 +30,12 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(jwtSecret.getBytes())
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }
