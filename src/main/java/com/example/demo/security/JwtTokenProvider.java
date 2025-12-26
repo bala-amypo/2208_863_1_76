@@ -23,7 +23,6 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("userId", user.getId())
-                // DO NOT use role (your UserPrincipal doesn't have getRole())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(SignatureAlgorithm.HS256, secret)
