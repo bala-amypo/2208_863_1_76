@@ -17,6 +17,7 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(UserPrincipal user) {
+
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMs);
 
@@ -31,21 +32,20 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            getClaims(token);
+            Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return false;
         }
     }
 
     public String getUsernameFromToken(String token) {
-        return getClaims(token).getSubject();
-    }
-
-    private Claims getClaims(String token) {
-        return Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
+        return claims.getSubject();
     }
 }
