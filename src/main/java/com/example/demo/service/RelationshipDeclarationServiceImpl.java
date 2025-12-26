@@ -56,8 +56,8 @@ public class RelationshipDeclarationServiceImpl implements RelationshipDeclarati
                 .toList();
     }
 
-    // ✅ REQUIRED by interface
-
+    // ✅ REQUIRED by interface  ← 🔥 THIS WAS MISSING @Override
+    @Override
     public List<RelationshipDeclaration> getAllDeclarations() {
         return repository.findAll();
     }
