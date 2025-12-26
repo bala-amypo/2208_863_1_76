@@ -1,16 +1,20 @@
- package com.example.demo.security.JwtTokenProvider;
+package com.example.demo.security;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.*;
 import java.util.Date;
+
 @Component
 public class JwtTokenProvider {
 
-    private final String jwtSecret = "secretkeysecretkeysecretkeysecretkey";
+    private final String jwtSecret =
+            "secretkeysecretkeysecretkeysecretkey"; // 32+ chars
     private final long jwtExpirationMs = 3600000;
 
     public String generateToken(UserPrincipal user) {
-
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("userId", user.getId())
@@ -18,15 +22,6 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    public String getUsernameFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(jwtSecret.getBytes())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
     }
 
     public boolean validateToken(String token) {

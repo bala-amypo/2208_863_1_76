@@ -1,3 +1,13 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.exception.ApiException;
+import com.example.demo.model.PersonProfile;
+import com.example.demo.repository.PersonProfileRepository;
+import com.example.demo.service.PersonProfileService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 @Service
 public class PersonProfileServiceImpl implements PersonProfileService {
 
@@ -44,7 +54,7 @@ public class PersonProfileServiceImpl implements PersonProfileService {
     @Override
     public PersonProfile findByReferenceId(String referenceId) {
         return repository.findByReferenceId(referenceId)
-                .orElseThrow(() -> new ApiException("ReferenceId not found"));
+                .orElseThrow(() -> new ApiException("Reference not found"));
     }
 
     @Override

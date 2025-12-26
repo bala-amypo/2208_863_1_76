@@ -22,7 +22,7 @@ public class RelationshipDeclarationServiceImpl
         this.declarationRepo = declarationRepo;
         this.personRepo = personRepo;
     }
-
+ 
     @Override
     public RelationshipDeclaration declareRelationship(RelationshipDeclaration declaration) {
         personRepo.findById(declaration.getPersonId())
