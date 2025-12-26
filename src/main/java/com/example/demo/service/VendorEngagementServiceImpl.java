@@ -1,60 +1,47 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.exception.ApiException;
+import com.example.demo.model.PersonProfile;
 import com.example.demo.model.VendorEngagementRecord;
+import com.example.demo.repository.PersonProfileRepository;
 import com.example.demo.repository.VendorEngagementRecordRepository;
 import com.example.demo.service.VendorEngagementService;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class VendorEngagementServiceImpl implements VendorEngagementService {
 
     private final VendorEngagementRecordRepository repository;
+    private final PersonProfileRepository personRepository;
 
-    public VendorEngagementServiceImpl(VendorEngagementRecordRepository repository) {
+    public VendorEngagementServiceImpl(VendorEngagementRecordRepository repository,
+                                       PersonProfileRepository personRepository) {
         this.repository = repository;
+        this.personRepository = personRepository;
     }
 
-    // ✅ REQUIRED by interface
     @Override
     public VendorEngagementRecord addEngagement(VendorEngagementRecord record) {
 
-        if (record.getEmployeeId() == null) {
-            throw new ApiException("Employee not found");
-        }
+        PersonProfile emp = personRepository.findById(record.getEmployeeId())
+                .orElseThrow(() -> new ApiException("Employee not found"));
+
+        PersonProfile vendor = personRepository.findById(record.getVendorId())
+                .orElseThrow(() -> new ApiException("Vendor not found"));
 
         return repository.save(record);
     }
 
-    // ✅ REQUIRED by interface
-    @Override
-    public VendorEngagementRecord getEngagementById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ApiException("Engagement not found"));
-    }
-
-    // ✅ REQUIRED by interface
     @Override
     public List<VendorEngagementRecord> getEngagementsByEmployee(Long employeeId) {
-        return repository.findAll()
-                .stream()
-                .filter(e -> e.getEmployeeId().equals(employeeId))
-                .toList();
+        return repository.findByEmployeeId(employeeId);
     }
 
-    // ✅ REQUIRED by interface
     @Override
     public List<VendorEngagementRecord> getEngagementsByVendor(Long vendorId) {
-        return repository.findAll()
-                .stream()
-                .filter(e -> e.getVendorId().equals(vendorId))
-                .toList();
+        return repository.findByVendorId(vendorId);
     }
 
-    // ✅ REQUIRED by interface
- 
     public List<VendorEngagementRecord> getAllEngagements() {
         return repository.findAll();
     }
