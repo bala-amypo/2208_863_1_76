@@ -1,18 +1,15 @@
 package com.example.demo.security;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-
-import javax.crypto.SecretKey;
 import java.util.Date;
 
 public class JwtTokenProvider {
 
-    private final SecretKey key;
+    private final String secret;
     private final long validityInMs;
 
     public JwtTokenProvider(String secret, long validityInMs) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.secret = secret;
         this.validityInMs = validityInMs;
     }
 
@@ -25,26 +22,26 @@ public class JwtTokenProvider {
                 .claim("userId", user.getId())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
-    }
-
-    public String getUsernameFromToken(String token) {
-        return getClaims(token).getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
             getClaims(token);
             return true;
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return false;
         }
     }
 
+    public String getUsernameFromToken(String token) {
+        return getClaims(token).getSubject();
+    }
+
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(key)
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
     }
