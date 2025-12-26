@@ -34,15 +34,18 @@ public class RelationshipDeclarationServiceImpl implements RelationshipDeclarati
 
     @Override
     public List<RelationshipDeclaration> getDeclarationsByPerson(Long personId) {
-        return repository.findByPersonId(personId);
+        return repository.findAll()
+                .stream()
+                .filter(d -> d.getPersonId().equals(personId))
+                .toList();
     }
 
     @Override
-    public RelationshipDeclaration verifyDeclaration(Long id) {
+    public RelationshipDeclaration verifyDeclaration(Long id, boolean verified) {
         RelationshipDeclaration declaration = repository.findById(id)
                 .orElseThrow(() -> new ApiException("Declaration not found"));
 
-        declaration.setIsVerified(true);
+        declaration.setIsVerified(verified);
         return repository.save(declaration);
     }
 

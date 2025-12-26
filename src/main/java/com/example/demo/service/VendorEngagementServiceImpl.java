@@ -33,12 +33,18 @@ public class VendorEngagementServiceImpl implements VendorEngagementService {
 
     @Override
     public List<VendorEngagementRecord> getEngagementsByEmployee(Long employeeId) {
-        return repository.findByEmployeeId(employeeId);
+        return repository.findAll()
+                .stream()
+                .filter(e -> e.getEmployeeId().equals(employeeId))
+                .toList();
     }
 
     @Override
     public List<VendorEngagementRecord> getEngagementsByVendor(Long vendorId) {
-        return repository.findByVendorId(vendorId);
+        return repository.findAll()
+                .stream()
+                .filter(e -> e.getVendorId().equals(vendorId))
+                .toList();
     }
 
     @Override
