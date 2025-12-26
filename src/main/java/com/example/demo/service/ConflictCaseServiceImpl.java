@@ -1,8 +1,8 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.exception.ApiException;
 import com.example.demo.model.ConflictCase;
 import com.example.demo.repository.ConflictCaseRepository;
-import com.example.demo.repository.ConflictFlagRepository;
 import com.example.demo.service.ConflictCaseService;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +47,6 @@ public class ConflictCaseServiceImpl implements ConflictCaseService {
     public ConflictCase updateCaseStatus(Long id, String status) {
         ConflictCase c = repository.findById(id)
                 .orElseThrow(() -> new ApiException("Case not found"));
-
         c.setStatus(status);
         return repository.save(c);
     }
