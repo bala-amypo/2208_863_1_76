@@ -54,7 +54,7 @@ public class VendorEngagementServiceImpl implements VendorEngagementService {
     }
 
     // ✅ REQUIRED by interface
-    @Override
+ 
     public List<VendorEngagementRecord> getAllEngagements() {
         return repository.findAll();
     }
