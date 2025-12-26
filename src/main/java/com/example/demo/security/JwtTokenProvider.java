@@ -13,13 +13,11 @@ public class JwtTokenProvider {
     private String secret;
     private long expiration;
 
-    // ✅ Default constructor (Spring)
     public JwtTokenProvider() {
-        this.secret = "mysecretkeymysecretkeymysecretkey";
+        this.secret = "examly-secret-key";
         this.expiration = 3600000;
     }
 
-    // ✅ Constructor expected by TESTS
     public JwtTokenProvider(String secret, long expiration) {
         this.secret = secret;
         this.expiration = expiration;
@@ -35,10 +33,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
-        return getClaims(token).getSubject();
-    }
-
     public boolean validateToken(String token) {
         try {
             getClaims(token);
@@ -46,6 +40,10 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public String getUsernameFromToken(String token) {
+        return getClaims(token).getSubject();
     }
 
     private Claims getClaims(String token) {
