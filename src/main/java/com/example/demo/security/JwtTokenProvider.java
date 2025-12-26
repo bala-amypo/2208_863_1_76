@@ -1,18 +1,18 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import javax.crypto.SecretKey;
 import java.util.Date;
 
 public class JwtTokenProvider {
 
-    private final SecretKey key;
+    private final String secret;
     private final long validityInMs;
 
     public JwtTokenProvider(String secret, long validityInMs) {
-        this.key = Keys.hmacKeyFor(secret.getBytes());
+        this.secret = secret;
         this.validityInMs = validityInMs;
     }
 
@@ -23,16 +23,16 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("userId", user.getId())
-                .claim("role", user.getRole())
+                // DO NOT use role (your UserPrincipal doesn't have getRole())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
     public boolean validateToken(String token) {
         try {
-            parseClaims(token);
+            getClaims(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -40,13 +40,12 @@ public class JwtTokenProvider {
     }
 
     public String getUsernameFromToken(String token) {
-        return parseClaims(token).getSubject();
+        return getClaims(token).getSubject();
     }
 
-    private Claims parseClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
     }
