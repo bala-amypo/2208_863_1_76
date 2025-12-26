@@ -17,20 +17,25 @@ public class VendorEngagementServiceImpl implements VendorEngagementService {
         this.repository = repository;
     }
 
+    // ✅ REQUIRED by interface
     @Override
     public VendorEngagementRecord addEngagement(VendorEngagementRecord record) {
+
         if (record.getEmployeeId() == null) {
             throw new ApiException("Employee not found");
         }
+
         return repository.save(record);
     }
 
+    // ✅ REQUIRED by interface
     @Override
     public VendorEngagementRecord getEngagementById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ApiException("Engagement not found"));
     }
 
+    // ✅ REQUIRED by interface
     @Override
     public List<VendorEngagementRecord> getEngagementsByEmployee(Long employeeId) {
         return repository.findAll()
@@ -39,6 +44,7 @@ public class VendorEngagementServiceImpl implements VendorEngagementService {
                 .toList();
     }
 
+    // ✅ REQUIRED by interface
     @Override
     public List<VendorEngagementRecord> getEngagementsByVendor(Long vendorId) {
         return repository.findAll()
@@ -47,6 +53,7 @@ public class VendorEngagementServiceImpl implements VendorEngagementService {
                 .toList();
     }
 
+    // ✅ REQUIRED by interface
     @Override
     public List<VendorEngagementRecord> getAllEngagements() {
         return repository.findAll();

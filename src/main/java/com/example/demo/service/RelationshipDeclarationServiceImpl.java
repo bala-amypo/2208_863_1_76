@@ -17,21 +17,37 @@ public class RelationshipDeclarationServiceImpl implements RelationshipDeclarati
         this.repository = repository;
     }
 
+    // ✅ REQUIRED by interface
     @Override
-    public RelationshipDeclaration createDeclaration(RelationshipDeclaration declaration) {
+    public RelationshipDeclaration declareRelationship(RelationshipDeclaration declaration) {
+
         if (declaration.getPersonId() == null) {
             throw new ApiException("Person required");
         }
+
         declaration.setIsVerified(false);
         return repository.save(declaration);
     }
 
+    // ✅ REQUIRED by interface
+    @Override
+    public RelationshipDeclaration verifyDeclaration(Long id, boolean verified) {
+
+        RelationshipDeclaration declaration = repository.findById(id)
+                .orElseThrow(() -> new ApiException("Declaration not found"));
+
+        declaration.setIsVerified(verified);
+        return repository.save(declaration);
+    }
+
+    // ✅ REQUIRED by interface
     @Override
     public RelationshipDeclaration getDeclarationById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ApiException("Declaration not found"));
     }
 
+    // ✅ REQUIRED by interface
     @Override
     public List<RelationshipDeclaration> getDeclarationsByPerson(Long personId) {
         return repository.findAll()
@@ -40,15 +56,7 @@ public class RelationshipDeclarationServiceImpl implements RelationshipDeclarati
                 .toList();
     }
 
-    @Override
-    public RelationshipDeclaration verifyDeclaration(Long id, boolean verified) {
-        RelationshipDeclaration declaration = repository.findById(id)
-                .orElseThrow(() -> new ApiException("Declaration not found"));
-
-        declaration.setIsVerified(verified);
-        return repository.save(declaration);
-    }
-
+    // ✅ REQUIRED by interface
     @Override
     public List<RelationshipDeclaration> getAllDeclarations() {
         return repository.findAll();
