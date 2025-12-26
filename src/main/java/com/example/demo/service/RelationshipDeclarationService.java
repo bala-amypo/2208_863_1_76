@@ -9,7 +9,10 @@ public interface RelationshipDeclarationService {
 
     RelationshipDeclaration verifyDeclaration(Long id, boolean verified);
 
+    RelationshipDeclaration getDeclarationById(Long id);
+
     List<RelationshipDeclaration> getDeclarationsByPerson(Long personId);
 
+    // ✅ THIS MUST EXIST
     List<RelationshipDeclaration> getAllDeclarations();
 }
