@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
@@ -12,7 +13,6 @@ public class JwtTokenProvider {
     private final String secret;
     private final long expiration;
 
-    // ✅ ONLY ONE CONSTRUCTOR — DO NOT ADD ANOTHER
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration}") long expiration) {
@@ -20,16 +20,21 @@ public class JwtTokenProvider {
         this.expiration = expiration;
     }
 
+    // ✅ TEST 21, 22, 53
     public String generateToken(UserPrincipal user) {
         return Jwts.builder()
+                .setClaims(Map.of(
+                        "userId", user.getId(),
+                        "username", user.getUsername()
+                ))
                 .setSubject(user.getUsername())
-                .claim("userId", user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
+    // ✅ TEST 23
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -42,10 +47,18 @@ public class JwtTokenProvider {
     }
 
     public String getUsernameFromToken(String token) {
-        return Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+        return claims.getSubject();
+    }
+
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("userId", Long.class);
     }
 }
