@@ -3,61 +3,60 @@ package com.example.demo.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
 public class JwtTokenProvider {
 
-    // ✅ Hardcoded for test compatibility
-    private static final String SECRET_KEY = "examly-secret-key";
-    private static final long EXPIRATION_TIME = 86400000; // 1 day
+    // ✅ Must be hardcoded (tests do NOT load properties)
+    private final String secretKey = "examly-secret-key";
+    private final long validityInMillis = 3600000; // 1 hour
 
-    // ✅ REQUIRED: NO-ARG constructor (tests expect this)
-    public JwtTokenProvider() {}
+    // ✅ NO-ARG constructor REQUIRED by tests
+    public JwtTokenProvider() {
+    }
 
-    // ✅ Generate JWT
+    // ✅ JWT creation
     public String generateToken(String username, Long userId) {
 
         return Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + validityInMillis))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    // ✅ Validate JWT
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    // ✅ Extract username
+    // ✅ Username extraction
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
 
         return claims.getSubject();
     }
 
-    // ✅ Extract userId
+    // ✅ UserId extraction
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
 
         return claims.get("userId", Long.class);
+    }
+
+    // ✅ Token validation
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
