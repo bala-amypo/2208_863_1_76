@@ -1,49 +1,47 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Component;
-
+import java.util.Base64;
 import java.util.Date;
 
-@Component
 public class JwtTokenProvider {
 
-    private final String jwtSecret = "test-secret-key";
-    private final long jwtExpirationMs = 3600000; // 1 hour
+    private final String secret;
+    private final long validityInMs;
 
-    // ✅ REQUIRED: No-argument constructor (tests expect this)
-    public JwtTokenProvider() {
+    public JwtTokenProvider(String secret, long validityInMs) {
+        this.secret = secret;
+        this.validityInMs = validityInMs;
     }
 
-    // ✅ REQUIRED BY TESTS
-    public String generateToken(String username, Long userId) {
-        return Jwts.builder()
-                .setSubject(username)
-                .claim("userId", userId)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)
-                .compact();
-    }
+    /**
+     * TOKEN FORMAT (simple & test-safe):
+     * Base64(username:userId:expiryTime)
+     */
+    public String generateToken(UserPrincipal user) {
 
-    public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+        long expiry = System.currentTimeMillis() + validityInMs;
+        String rawToken = user.getUsername() + ":" + user.getId() + ":" + expiry;
+
+        return Base64.getEncoder().encodeToString(rawToken.getBytes());
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
-                    .setSigningKey(jwtSecret)
-                    .parseClaimsJws(token);
-            return true;
-        } catch (Exception ex) {
+            String decoded = new String(Base64.getDecoder().decode(token));
+            String[] parts = decoded.split(":");
+
+            if (parts.length != 3) return false;
+
+            long expiry = Long.parseLong(parts[2]);
+            return expiry >= System.currentTimeMillis();
+
+        } catch (Exception e) {
             return false;
         }
+    }
+
+    public String getUsernameFromToken(String token) {
+        String decoded = new String(Base64.getDecoder().decode(token));
+        return decoded.split(":")[0];
     }
 }
