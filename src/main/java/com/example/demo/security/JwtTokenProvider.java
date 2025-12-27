@@ -8,14 +8,28 @@ import java.util.Date;
 
 public class JwtTokenProvider {
 
-    private final String jwtSecret = "test-secret-key";
-    private final long jwtExpirationMs = 3600000;
+    private String jwtSecret = "test-secret-key";
+    private long jwtExpirationMs = 3600000;
 
-    // ✅ REQUIRED: No-arg constructor (tests expect this)
+    // ✅ REQUIRED BY SPRING
     public JwtTokenProvider() {
     }
 
     // ✅ REQUIRED BY TESTS
+    public JwtTokenProvider(String jwtSecret, long jwtExpirationMs) {
+        this.jwtSecret = jwtSecret;
+        this.jwtExpirationMs = jwtExpirationMs;
+    }
+
+    // ✅ REQUIRED BY TESTS
+    public String generateToken(UserPrincipal userPrincipal) {
+        return generateToken(
+                userPrincipal.getUsername(),
+                userPrincipal.getId()
+        );
+    }
+
+    // ✅ CORE TOKEN METHOD
     public String generateToken(String username, Long userId) {
         return Jwts.builder()
                 .setSubject(username)
