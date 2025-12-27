@@ -9,10 +9,10 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private String secret;
-    private long expiration;
+    private final String secret;
+    private final long expiration;
 
-    // ✅ Used by Spring Boot
+    // ✅ ONLY ONE CONSTRUCTOR — DO NOT ADD ANOTHER
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration}") long expiration) {
@@ -20,17 +20,7 @@ public class JwtTokenProvider {
         this.expiration = expiration;
     }
 
-    // ✅ Used by TEST CASES (VERY IMPORTANT)
-    public JwtTokenProvider(String secret, long expiration) {
-        this.secret = secret;
-        this.expiration = expiration;
-    }
-
-    // ===============================
-    // GENERATE TOKEN
-    // ===============================
     public String generateToken(UserPrincipal user) {
-
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("userId", user.getId())
@@ -40,9 +30,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // ===============================
-    // VALIDATE TOKEN
-    // ===============================
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -54,9 +41,6 @@ public class JwtTokenProvider {
         }
     }
 
-    // ===============================
-    // GET USERNAME
-    // ===============================
     public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
