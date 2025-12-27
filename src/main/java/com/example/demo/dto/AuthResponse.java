@@ -1,14 +1,34 @@
 package com.example.demo.dto;
 
-public class AuthResponse {
+public class AuthRequest {
 
-    private String token;
+    private String username;
+    private String password;
 
-    public AuthResponse(String token) {
-        this.token = token;
+    // No-args constructor (required for JSON binding)
+    public AuthRequest() {
     }
 
-    public String getToken() {
-        return token;
+    // All-args constructor (optional but useful)
+    public AuthRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    // Getters & Setters
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
