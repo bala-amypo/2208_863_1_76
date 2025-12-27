@@ -1,47 +1,51 @@
 package com.example.demo.security;
 
-import java.util.Base64;
+import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
+@Component
 public class JwtTokenProvider {
 
     private final String secret;
-    private final long validityInMs;
+    private final long expiration;
 
-    public JwtTokenProvider(String secret, long validityInMs) {
+    // ✅ ONLY ONE CONSTRUCTOR — DO NOT ADD ANOTHER
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") long expiration) {
         this.secret = secret;
-        this.validityInMs = validityInMs;
+        this.expiration = expiration;
     }
 
-    /**
-     * TOKEN FORMAT (simple & test-safe):
-     * Base64(username:userId:expiryTime)
-     */
     public String generateToken(UserPrincipal user) {
-
-        long expiry = System.currentTimeMillis() + validityInMs;
-        String rawToken = user.getUsername() + ":" + user.getId() + ":" + expiry;
-
-        return Base64.getEncoder().encodeToString(rawToken.getBytes());
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .claim("userId", user.getId())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
     }
 
     public boolean validateToken(String token) {
         try {
-            String decoded = new String(Base64.getDecoder().decode(token));
-            String[] parts = decoded.split(":");
-
-            if (parts.length != 3) return false;
-
-            long expiry = Long.parseLong(parts[2]);
-            return expiry >= System.currentTimeMillis();
-
-        } catch (Exception e) {
+            Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
     public String getUsernameFromToken(String token) {
-        String decoded = new String(Base64.getDecoder().decode(token));
-        return decoded.split(":")[0];
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 }
