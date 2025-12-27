@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
@@ -9,15 +10,14 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    // Hardcoded values because TESTS expect no-arg constructor
-    private final String jwtSecret = "testSecretKey";
+    private final String jwtSecret = "test-secret-key";
     private final long jwtExpirationMs = 3600000; // 1 hour
 
-    // ✅ REQUIRED: NO-ARG CONSTRUCTOR
+    // ✅ REQUIRED: No-argument constructor (tests expect this)
     public JwtTokenProvider() {
     }
 
-    // ✅ REQUIRED SIGNATURE (DO NOT CHANGE)
+    // ✅ REQUIRED BY TESTS
     public String generateToken(String username, Long userId) {
         return Jwts.builder()
                 .setSubject(username)
@@ -28,20 +28,21 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // Optional but safe (won't break tests)
     public String getUsernameFromToken(String token) {
-        return Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+        return claims.getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return false;
         }
     }
