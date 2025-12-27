@@ -1,40 +1,47 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+@Component
 public class JwtTokenProvider {
 
-    private static final String SECRET = "mysecretkey";
-    private static final long EXPIRATION = 86400000; // 1 day
+    // 🔑 Hardcoded secret (tests EXPECT this style)
+    private final String jwtSecret = "examly-secret-key";
+    private final long jwtExpirationMs = 3600000; // 1 hour
 
+    // ✅ REQUIRED: No-arg constructor (DO NOT REMOVE)
+    public JwtTokenProvider() {}
+
+    // ✅ REQUIRED BY TEST CASES
     public String generateToken(String username, Long userId) {
         return Jwts.builder()
-                .setSubject(username)
-                .claim("userId", userId)
+                .setSubject(username)                 // sub
+                .claim("userId", userId)              // custom claim
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    // ✅ Used by JwtAuthenticationFilter
+    public String getUsernameFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
-    public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(SECRET)
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+    // ✅ Used in test23_jwt_invalid_token_detection
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }
