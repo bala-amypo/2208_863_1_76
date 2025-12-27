@@ -1,36 +1,71 @@
 package com.example.demo.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    // ✅ REQUIRED: No-args constructor
+    private final Key key;
+    private final long expirationMs = 3600000; // 1 hour
+
+    // ✅ NO-ARG CONSTRUCTOR (VERY IMPORTANT)
     public JwtTokenProvider() {
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    // ✅ REQUIRED by tests
+    // ✅ TEST EXPECTS THIS METHOD
     public String generateToken(String username, Long userId) {
-        return "token_" + username + "_" + userId;
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationMs);
+
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("userId", userId)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(key)
+                .compact();
     }
 
-    // ✅ REQUIRED by tests
-    public String generateToken(UserPrincipal userPrincipal) {
-        return generateToken(
-                userPrincipal.getUsername(),
-                userPrincipal.getId()
-        );
-    }
-
-    // ✅ REQUIRED by tests
+    // ✅ USED BY TESTS
     public boolean validateToken(String token) {
-        return token != null && token.startsWith("token_");
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    // ✅ REQUIRED by tests
+    // ✅ USED BY TESTS
     public String getUsernameFromToken(String token) {
-        if (token == null) return null;
-        String[] parts = token.split("_");
-        return parts.length >= 2 ? parts[1] : null;
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
+    }
+
+    // ✅ USED BY TESTS
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("userId", Long.class);
     }
 }
