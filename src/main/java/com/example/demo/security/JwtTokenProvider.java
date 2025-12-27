@@ -8,14 +8,22 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final String jwtSecret = "secret-key";
-    private final long jwtExpirationMs = 86400000; // 1 day
+    private String jwtSecret;
+    private long jwtExpirationMs;
 
-    // REQUIRED: no-args constructor (tests expect this)
+    // ✅ REQUIRED BY SPRING
     public JwtTokenProvider() {
+        this.jwtSecret = "secret-key";
+        this.jwtExpirationMs = 86400000; // 1 day
     }
 
-    // REQUIRED BY TESTS
+    // ✅ REQUIRED BY TEST CASES
+    public JwtTokenProvider(String jwtSecret, long jwtExpirationMs) {
+        this.jwtSecret = jwtSecret;
+        this.jwtExpirationMs = jwtExpirationMs;
+    }
+
+    // ✅ REQUIRED BY TESTS
     public String generateToken(String username, Long userId) {
         return Jwts.builder()
                 .setSubject(username)
@@ -26,24 +34,24 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // REQUIRED BY TESTS (overload)
+    // ✅ REQUIRED BY TESTS
     public String generateToken(UserPrincipal principal) {
         return generateToken(principal.getUsername(), principal.getId());
     }
 
-    // REQUIRED BY TESTS
+    // ✅ REQUIRED BY TESTS
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token);
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
-    // REQUIRED BY TESTS
+    // ✅ REQUIRED BY TESTS
     public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
