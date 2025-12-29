@@ -11,13 +11,12 @@ public class JwtTokenProvider {
     private String jwtSecret;
     private long jwtExpirationMs;
 
-    // ✅ REQUIRED BY SPRING
     public JwtTokenProvider() {
         this.jwtSecret = "secret-key";
-        this.jwtExpirationMs = 86400000; // 1 day
+        this.jwtExpirationMs = 86400000; 
     }
 
-    // ✅ REQUIRED BY TEST CASES
+ 
     public JwtTokenProvider(String jwtSecret, long jwtExpirationMs) {
         this.jwtSecret = jwtSecret;
         this.jwtExpirationMs = jwtExpirationMs;
@@ -34,7 +33,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // ✅ REQUIRED BY TESTS
+
     public String generateToken(UserPrincipal principal) {
         return generateToken(principal.getUsername(), principal.getId());
     }
